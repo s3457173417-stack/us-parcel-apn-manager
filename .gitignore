@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.zip
+*.gpkg
+*.geojson
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

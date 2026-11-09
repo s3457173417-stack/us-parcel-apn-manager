@@ -1,0 +1,17 @@
+[general]
+name=US Parcel / APN Data Manager
+qgisMinimumVersion=3.22
+description=Nationwide US Parcel/APN Manager (All 50 States): local SHP/ZIP scanner, built-in multi-state & county ArcGIS parcel services, automatic 50-state US county parcel discovery, map point click parcel picker, one-click satellite basemap, project folder auto-output sync, address/folder/APN search with geocoding fallback, and 4-language UI (English default, 简体中文, Español, Français).
+version=0.7.0
+author=susnzhe
+email=3457173417@qq.com
+repository=https://github.com/susnzhe/us-parcel-apn-manager
+tracker=https://github.com/susnzhe/us-parcel-apn-manager/issues
+homepage=https://github.com/susnzhe/us-parcel-apn-manager
+license=GPL-2.0-or-later
+about=Nationwide US Parcel & APN Data Manager docked on the right side of QGIS. Supports all 50 US states via automatic state/county detection (built-in official state/county services across CA, CO, UT, WA, WI, NJ, FL, AZ + dynamic ArcGIS Online county parcel discovery), map point click parcel query, one-click Esri satellite basemap, automatic project folder output sync, one-click APN/address copy, custom US ArcGIS layer auto-inspection, parcel search by street address / underscore project folder name / direct APN, current work extent download, and 4 languages (English primary, 简体中文, Español, Français).
+category=Vector
+tags=parcel,APN,cadastral,assessor,ArcGIS,US,Arizona,GIS,property,boundary
+icon=icon.svg
+experimental=False
+deprecated=False
