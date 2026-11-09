@@ -190,6 +190,10 @@ class ParcelDialog(QWidget):
         self.intro.setWordWrap(True)
         self.btn_basemap = QPushButton()
         self.btn_basemap.clicked.connect(self.add_us_basemap)
+        self.btn_support = QPushButton("☕ Support")
+        self.btn_support.clicked.connect(
+            lambda: QDesktopServices.openUrl(QUrl("https://ko-fi.com/susnzhe"))
+        )
         self.lang_combo = QComboBox()
         self.lang_combo.setFixedWidth(105)
         for label, code in LANGUAGES:
@@ -200,6 +204,7 @@ class ParcelDialog(QWidget):
         self.btn_language = self.lang_combo
         top.addWidget(self.intro, 1)
         top.addWidget(self.btn_basemap, 0, Qt.AlignmentFlag.AlignTop)
+        top.addWidget(self.btn_support, 0, Qt.AlignmentFlag.AlignTop)
         top.addWidget(self.lang_combo, 0, Qt.AlignmentFlag.AlignTop)
         root.addLayout(top)
 
@@ -437,6 +442,13 @@ class ParcelDialog(QWidget):
             "Add Esri World Imagery satellite basemap at the bottom of the layer tree",
             "Añadir mapa base satelital Esri World Imagery al fondo del árbol de capas",
             "Ajouter le fond satellite Esri World Imagery tout en bas de l'arbre des couches",
+        ))
+        self.btn_support.setText(self.tr("☕ 赞赏", "☕ Support", "☕ Apoyar", "☕ Soutenir"))
+        self.btn_support.setToolTip(self.tr(
+            "如果本插件帮到了您的项目，欢迎在 Ko-fi 请作者喝杯咖啡：https://ko-fi.com/susnzhe",
+            "Support open-source development on Ko-fi: https://ko-fi.com/susnzhe",
+            "Apoyar el desarrollo en Ko-fi: https://ko-fi.com/susnzhe",
+            "Soutenir le développement sur Ko-fi : https://ko-fi.com/susnzhe",
         ))
         idx = self.lang_combo.findData(self.lang)
         if idx >= 0 and self.lang_combo.currentIndex() != idx:

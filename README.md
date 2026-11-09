@@ -1,6 +1,10 @@
-# US Parcel / APN Data Manager for QGIS (`v0.7.0`)
+# US Parcel / APN Data Manager for QGIS (`v0.7.2`)
+
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Buy%20Me%20a%20Coffee%20☕-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/susnzhe)
 
 Nationwide US (**All 50 States**) Parcel & APN Data Manager for QGIS. Supports local SHP/ZIP parcel scanning, built-in official state/county ArcGIS parcel services, dynamic 50-state US county parcel discovery, map point click parcel query, address/project-folder/APN search with geocoding spatial fallback, one-click satellite basemap, and a 4-language UI (`English` default, `简体中文`, `Español`, `Français`).
+
+> ☕ **Support / 赞赏支持**: If this plugin saved you time on your GIS, land development, or surveying projects, feel free to [Buy Me a Coffee on Ko-fi (https://ko-fi.com/susnzhe)](https://ko-fi.com/susnzhe)!
 
 ## Installation
 1. Download the plugin `.zip` from Releases (or clone this repository into your QGIS `python/plugins/parcel_apn_manager` folder).
