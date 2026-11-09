@@ -36,6 +36,7 @@ from qgis.core import (
     QgsExpression,
     QgsFeatureRequest,
     QgsFillSymbol,
+    QgsMessageLog,
     QgsPalLayerSettings,
     QgsPointXY,
     QgsProject,
@@ -171,9 +172,9 @@ class ParcelDialog(QWidget):
 
         self.scroll = QScrollArea(self)
         self.scroll.setWidgetResizable(True)
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.scroll.setFrameShape(QFrame.NoFrame)
+        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.scroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.scroll.setFrameShape(QFrame.Shape.NoFrame)
         outer_layout.addWidget(self.scroll)
 
         self.content = QWidget()
@@ -198,8 +199,8 @@ class ParcelDialog(QWidget):
         self.lang_combo.currentIndexChanged.connect(self._on_language_changed)
         self.btn_language = self.lang_combo
         top.addWidget(self.intro, 1)
-        top.addWidget(self.btn_basemap, 0, Qt.AlignTop)
-        top.addWidget(self.lang_combo, 0, Qt.AlignTop)
+        top.addWidget(self.btn_basemap, 0, Qt.AlignmentFlag.AlignTop)
+        top.addWidget(self.lang_combo, 0, Qt.AlignmentFlag.AlignTop)
         root.addLayout(top)
 
         self.tabs = QTabWidget()
@@ -254,9 +255,9 @@ class ParcelDialog(QWidget):
         layout.addWidget(self.local_source_box)
 
         self.local_table = QTableWidget(0, 7)
-        self.local_table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.local_table.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.local_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.local_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.local_table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.local_table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.local_table.horizontalHeader().setStretchLastSection(True)
         self.local_table.doubleClicked.connect(self.load_selected_local)
         layout.addWidget(self.local_table, 1)
@@ -340,9 +341,9 @@ class ParcelDialog(QWidget):
         address_layout.addWidget(self.address_normalized_label)
 
         self.address_table = QTableWidget(0, 4)
-        self.address_table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.address_table.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.address_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.address_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.address_table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.address_table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.address_table.horizontalHeader().setStretchLastSection(True)
         self.address_table.doubleClicked.connect(self.download_selected_address_parcel)
         self.address_table.setMaximumHeight(165)
@@ -619,7 +620,7 @@ class ParcelDialog(QWidget):
                     self.tr("请先输入自定义 ArcGIS 图层 URL。", "Please enter a custom ArcGIS layer URL first."),
                 )
             return {}
-        QApplication.setOverrideCursor(Qt.WaitCursor)
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         try:
             meta = inspect_arcgis_layer_metadata(url)
         except Exception as exc:
@@ -656,7 +657,7 @@ class ParcelDialog(QWidget):
         local = self.settings.value(f"{SETTINGS_ROOT}/localPath", "", type=str)
         out = self.settings.value(f"{SETTINGS_ROOT}/outputDir", "", type=str)
         if not out:
-            docs = QStandardPaths.writableLocation(QStandardPaths.DocumentsLocation)
+            docs = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DocumentsLocation)
             out = os.path.join(docs, "QGIS_Parcel_APN")
         self.local_path.setText(local)
         self.output_dir.setText(out)
@@ -730,7 +731,7 @@ class ParcelDialog(QWidget):
         self.btn_copy_apn.setEnabled(False)
         self.address_result_status.setText(self.tr("正在查询点击位置地块…", "Querying parcel at clicked point…"))
 
-        QApplication.setOverrideCursor(Qt.WaitCursor)
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         try:
             key = self.source_combo.currentData()
             if key == AUTO_US_KEY:
@@ -829,7 +830,7 @@ class ParcelDialog(QWidget):
             for col, value in enumerate(values):
                 item = QTableWidgetItem(str(value))
                 if col == 0:
-                    item.setData(Qt.UserRole, row)
+                    item.setData(Qt.ItemDataRole.UserRole, row)
                 self.local_table.setItem(row, col, item)
 
         self.local_table.resizeColumnsToContents()
@@ -978,7 +979,7 @@ class ParcelDialog(QWidget):
 
             if interactive:
                 box = QMessageBox(self)
-                box.setIcon(QMessageBox.Warning)
+                box.setIcon(QMessageBox.Icon.Warning)
                 box.setWindowTitle(self.tr("坐标转换提示", "Coordinate Transform Notice"))
                 box.setText(self.tr(
                     "数据可以继续使用，但当前不是最高精度坐标转换。",
@@ -1003,12 +1004,15 @@ class ParcelDialog(QWidget):
                     "普通 Parcel/APN 查看和一般 GIS 分析通常可继续。若用于测量、产权边界或工程级成果，建议安装缺失网格后再使用。",
                     "Ordinary Parcel/APN viewing and general GIS analysis can usually continue. For surveying, legal boundary, or engineering-grade work, install the missing grid before use."
                 ))
-                box.addButton(self.tr("继续使用", "Continue"), QMessageBox.AcceptRole)
+                box.addButton(self.tr("继续使用", "Continue"), QMessageBox.ButtonRole.AcceptRole)
                 if urls:
-                    btn_grid = box.addButton(self.tr("下载缺失网格", "Download Missing Grid"), QMessageBox.ActionRole)
+                    btn_grid = box.addButton(
+                        self.tr("下载缺失网格", "Download Missing Grid"),
+                        QMessageBox.ButtonRole.ActionRole,
+                    )
                 else:
                     btn_grid = None
-                box.exec_()
+                box.exec()
                 if btn_grid is not None and box.clickedButton() == btn_grid:
                     QDesktopServices.openUrl(QUrl(urls[0]))
             return result
@@ -1030,8 +1034,8 @@ class ParcelDialog(QWidget):
             try:
                 if layer.source().replace("\\", "/") == norm:
                     return layer
-            except Exception:
-                pass
+            except Exception as exc:
+                QgsMessageLog.logMessage(str(exc), PLUGIN_NAME, Qgis.MessageLevel.Info)
         return None
 
     def _apply_parcel_style(self, layer, apn_field, enable_labels=True):
@@ -1044,8 +1048,8 @@ class ParcelDialog(QWidget):
                 "outline_style": "solid",
             })
             layer.setRenderer(QgsSingleSymbolRenderer(symbol))
-        except Exception:
-            pass
+        except Exception as exc:
+            QgsMessageLog.logMessage(str(exc), PLUGIN_NAME, Qgis.MessageLevel.Info)
 
         self._set_apn_labels(layer, apn_field, enable_labels)
 
@@ -1061,7 +1065,7 @@ class ParcelDialog(QWidget):
                 pal.placement = getattr(
                     getattr(Qgis, "LabelPlacement", None),
                     "Horizontal",
-                    QgsPalLayerSettings.Horizontal,
+                    QgsPalLayerSettings.Placement.Horizontal,
                 )
                 pal.scaleVisibility = False
 
@@ -1222,7 +1226,7 @@ class ParcelDialog(QWidget):
             for col, value in enumerate((apn, address, city, zipcode)):
                 item = QTableWidgetItem(str(value or ""))
                 if col == 0:
-                    item.setData(Qt.UserRole, idx)
+                    item.setData(Qt.ItemDataRole.UserRole, idx)
                 self.address_table.setItem(row, col, item)
 
         self.address_table.resizeColumnsToContents()
@@ -1257,7 +1261,7 @@ class ParcelDialog(QWidget):
         self.btn_copy_apn.setEnabled(False)
         self.address_result_status.setText(self.tr("正在搜索…", "Searching…"))
 
-        QApplication.setOverrideCursor(Qt.WaitCursor)
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         try:
             cfg = self._address_source_config(raw_query=raw)
             self._active_search_cfg = cfg
@@ -1298,7 +1302,7 @@ class ParcelDialog(QWidget):
         if row < 0:
             return None
         item = self.address_table.item(row, 0)
-        idx = item.data(Qt.UserRole) if item is not None else row
+        idx = item.data(Qt.ItemDataRole.UserRole) if item is not None else row
         try:
             idx = int(idx)
         except Exception:
@@ -1405,8 +1409,8 @@ class ParcelDialog(QWidget):
                 self.canvas.zoomToSelected(final_layer)
                 # Add a little context around a single parcel.
                 self.canvas.zoomOut()
-            except Exception:
-                pass
+            except Exception as exc:
+                QgsMessageLog.logMessage(str(exc), PLUGIN_NAME, Qgis.MessageLevel.Info)
         self.canvas.refresh()
         self._check_layer_crs_transform(final_layer, interactive=True)
 
@@ -1444,7 +1448,7 @@ class ParcelDialog(QWidget):
         return layer_url, wkid, short_name
 
     def check_online_extent(self):
-        QApplication.setOverrideCursor(Qt.WaitCursor)
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         try:
             layer_url, wkid, _ = self._current_online_source()
             extent = transform_canvas_extent_to_service(self.canvas, wkid)
@@ -1475,7 +1479,7 @@ class ParcelDialog(QWidget):
 
         # Capture QGIS work area before any network/file operations.
         work_extent = QgsRectangle(self.canvas.extent())
-        QApplication.setOverrideCursor(Qt.WaitCursor)
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         try:
             layer_url, wkid, short_name = self._current_online_source()
             service_extent = transform_canvas_extent_to_service(self.canvas, wkid)
@@ -1498,7 +1502,7 @@ class ParcelDialog(QWidget):
                 f"当前范围约有 {count:,} 个地块，下载量较大。建议缩小地图范围。仍然继续？",
                 f"The current extent contains about {count:,} parcels. Zooming in is recommended. Continue anyway?"
             ))
-            if answer != QMessageBox.Yes:
+            if answer != QMessageBox.StandardButton.Yes:
                 return
 
         self.progress.setValue(0)
@@ -1510,7 +1514,7 @@ class ParcelDialog(QWidget):
             self.status.setText(self.tr(f"下载中：{done:,} / {total:,}", f"Downloading: {done:,} / {total:,}"))
             QApplication.processEvents()
 
-        QApplication.setOverrideCursor(Qt.WaitCursor)
+        QApplication.setOverrideCursor(Qt.CursorShape.WaitCursor)
         try:
             # parcel_io requests GeoJSON coordinates in EPSG:4326 on purpose. QGIS then
             # reprojects them correctly into the project's CRS and avoids GeoJSON CRS ambiguity.
@@ -1595,17 +1599,17 @@ class ParcelDialog(QWidget):
             options.driverName = "GPKG"
             options.fileEncoding = "UTF-8"
             options.layerName = layer_name
-            options.actionOnExistingFile = QgsVectorFileWriter.CreateOrOverwriteFile
+            options.actionOnExistingFile = QgsVectorFileWriter.ActionOnExistingFile.CreateOrOverwriteFile
             result = QgsVectorFileWriter.writeAsVectorFormatV3(
                 layer, gpkg_path, QgsProject.instance().transformContext(), options
             )
             error_code = result[0] if isinstance(result, tuple) else result
-            return error_code == QgsVectorFileWriter.NoError
+            return error_code == QgsVectorFileWriter.WriterError.NoError
         except Exception:
             try:
                 result = QgsVectorFileWriter.writeAsVectorFormat(layer, gpkg_path, "UTF-8", layer.crs(), "GPKG")
                 error_code = result[0] if isinstance(result, tuple) else result
-                return error_code == QgsVectorFileWriter.NoError
+                return error_code == QgsVectorFileWriter.WriterError.NoError
             except Exception:
                 return False
 
@@ -1641,8 +1645,8 @@ class ParcelDialog(QWidget):
         self.iface.setActiveLayer(layer)
         try:
             self.canvas.zoomToSelected(layer)
-        except Exception:
-            pass
+        except Exception as exc:
+            QgsMessageLog.logMessage(str(exc), PLUGIN_NAME, Qgis.MessageLevel.Info)
         self.status.setText(self.tr(
             f"已选择 {len(ids)} 个地块：{value}",
             f"Selected {len(ids)} parcel(s): {value}"

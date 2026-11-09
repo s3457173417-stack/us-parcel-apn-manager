@@ -8,8 +8,10 @@ from urllib.parse import urlencode
 from qgis.PyQt.QtCore import QEventLoop, QTimer, QUrl
 from qgis.PyQt.QtNetwork import QNetworkRequest
 from qgis.core import (
+    Qgis,
     QgsCoordinateReferenceSystem,
     QgsCoordinateTransform,
+    QgsMessageLog,
     QgsNetworkAccessManager,
     QgsProject,
     QgsRectangle,
@@ -97,7 +99,7 @@ def _validate_vector_source(name, source, source_type, companions_ok=True):
         return c
 
     c.valid = True
-    c.geometry_ok = QgsWkbTypes.geometryType(layer.wkbType()) == QgsWkbTypes.PolygonGeometry
+    c.geometry_ok = QgsWkbTypes.geometryType(layer.wkbType()) == QgsWkbTypes.GeometryType.PolygonGeometry
     try:
         c.feature_count = int(layer.featureCount())
     except Exception:
@@ -309,7 +311,7 @@ def _network_get_json(url, timeout_ms=60000):
     timer.timeout.connect(loop.quit)
     reply.finished.connect(loop.quit)
     timer.start(timeout_ms)
-    loop.exec_()
+    loop.exec()
 
     if not timer.isActive():
         reply.abort()
@@ -460,10 +462,10 @@ def discover_us_parcel_service(lon, lat, county="", state_abbr="", state_name=""
                     if cache_key:
                         _DISCOVERED_US_CACHE[cache_key] = cfg
                     return dict(cfg)
-                except Exception:
-                    continue
-        except Exception:
-            pass
+                except Exception as exc:
+                    QgsMessageLog.logMessage(str(exc), "ParcelAPNManager", Qgis.MessageLevel.Info)
+        except Exception as exc:
+            QgsMessageLog.logMessage(str(exc), "ParcelAPNManager", Qgis.MessageLevel.Info)
 
     return dict(ONLINE_SOURCES["maricopa"])
 
@@ -645,8 +647,8 @@ def search_online_apn(apn_text, layer_url, apn_fields=None, result_limit=30):
             meta = inspect_arcgis_layer_metadata(layer_url)
             if meta.get("apn_field"):
                 fields = [meta["apn_field"]]
-        except Exception:
-            pass
+        except Exception as exc:
+            QgsMessageLog.logMessage(str(exc), "ParcelAPNManager", Qgis.MessageLevel.Info)
     if not fields:
         fields = ["APN_DASH", "APN"]
 
@@ -702,8 +704,8 @@ def geocode_us_address(address_text, max_locations=5, bias_lonlat=None):
     if bias_lonlat and len(bias_lonlat) == 2:
         try:
             params["location"] = f"{float(bias_lonlat[0]):.5f},{float(bias_lonlat[1]):.5f}"
-        except Exception:
-            pass
+        except Exception as exc:
+            QgsMessageLog.logMessage(str(exc), "ParcelAPNManager", Qgis.MessageLevel.Info)
 
     try:
         data = _network_get_json(ARCGIS_GEOCODER_URL + "?" + urlencode(params), timeout_ms=25000)
@@ -802,8 +804,8 @@ def search_online_address(
             data = _network_get_json(query_url(layer_url) + "?" + urlencode(params), timeout_ms=60000)
             if data.get("type") == "FeatureCollection" and data.get("features"):
                 return normalized, data
-        except Exception:
-            pass
+        except Exception as exc:
+            QgsMessageLog.logMessage(str(exc), "ParcelAPNManager", Qgis.MessageLevel.Info)
 
     # Fallback: Geocode US/AZ address -> spatial point-in-polygon parcel query
     candidates = geocode_us_address(normalized, max_locations=3)
@@ -826,8 +828,8 @@ def search_online_address(
                     if key not in seen_keys:
                         seen_keys.add(key)
                         merged_features.append(feat)
-            except Exception:
-                continue
+            except Exception as exc:
+                QgsMessageLog.logMessage(str(exc), "ParcelAPNManager", Qgis.MessageLevel.Info)
         if merged_features:
             return normalized, {"type": "FeatureCollection", "features": merged_features}
 

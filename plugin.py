@@ -36,11 +36,13 @@ class ParcelAPNManagerPlugin:
             self.iface.mainWindow(),
         )
         self.dock.setObjectName("ParcelAPNDataManagerDock")
-        self.dock.setAllowedAreas(Qt.LeftDockWidgetArea | Qt.RightDockWidgetArea)
+        self.dock.setAllowedAreas(
+            Qt.DockWidgetArea.LeftDockWidgetArea | Qt.DockWidgetArea.RightDockWidgetArea
+        )
         self.dock.setFeatures(
-            QDockWidget.DockWidgetClosable
-            | QDockWidget.DockWidgetMovable
-            | QDockWidget.DockWidgetFloatable
+            QDockWidget.DockWidgetFeature.DockWidgetClosable
+            | QDockWidget.DockWidgetFeature.DockWidgetMovable
+            | QDockWidget.DockWidgetFeature.DockWidgetFloatable
         )
         self.dock.setWidget(self.dialog)
         # The panel's own Close button should hide the whole dock, not only
@@ -53,7 +55,7 @@ class ParcelAPNManagerPlugin:
         self.dock.visibilityChanged.connect(self._dock_visibility_changed)
 
         # First creation is intentionally docked on the RIGHT side of QGIS.
-        self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dock)
+        self.iface.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dock)
         self.dock.resize(620, 760)
 
     def _dock_visibility_changed(self, visible):
