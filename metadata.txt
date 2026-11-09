@@ -12,6 +12,6 @@ license=GPL-2.0-or-later
 about=Nationwide US Parcel & APN Data Manager docked on the right side of QGIS. Supports all 50 US states via automatic state/county detection (built-in official state/county services across CA, CO, UT, WA, WI, NJ, FL, AZ + dynamic ArcGIS Online county parcel discovery), map point click parcel query, one-click Esri satellite basemap, automatic project folder output sync, one-click APN/address copy, custom US ArcGIS layer auto-inspection, parcel search by street address / underscore project folder name / direct APN, current work extent download, and 4 languages (English primary, 简体中文, Español, Français).
 category=Vector
 tags=parcel,APN,cadastral,assessor,ArcGIS,US,Arizona,GIS,property,boundary
-icon=icon.svg
+icon=icon.png
 experimental=False
 deprecated=False
